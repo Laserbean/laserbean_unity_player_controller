@@ -5,6 +5,8 @@ using UnityEngine.InputSystem;
 
 using System.Linq;
 
+using Laserbean.General; 
+
 
 namespace Laserbean.PlayerControl {
 

@@ -4,6 +4,7 @@ using UnityEngine;
 
 using UnityEngine.InputSystem; 
 
+using Laserbean.General; 
 
 namespace Laserbean.PlayerControl {
 
