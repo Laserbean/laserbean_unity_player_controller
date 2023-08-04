@@ -92,6 +92,10 @@ public class PlayerMovementTD : MonoBehaviour
         }
     }
 
+    public void DoMovement(Vector2 move) {
+        rigidbody2d.AddForce(move, ForceMode2D.Impulse); 
+    }
+
 
 }
 }
