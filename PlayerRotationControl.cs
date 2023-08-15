@@ -26,6 +26,10 @@ public class PlayerRotationControl : MonoBehaviour
     #endif
     [SerializeField]  bool rotationLocked = false; 
 
+    public void DisenableRotation(bool canrot) {
+        rotationLocked = !canrot; 
+    }
+
 
     private void OnEnable() {
         Actions.OnSettingsChange += OnSettingsChange;
