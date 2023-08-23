@@ -92,6 +92,19 @@ public class PlayerMovementTD : MonoBehaviour
         }
     }
 
+    public void EnableMovement() {
+        movementEnabled = true; 
+    }
+
+    public void DisableMovement() {
+        movementEnabled = false; 
+    }
+
+    public void Stun(float time) {
+        movementEnabled = false; 
+        Invoke("EnableMovement", time);
+    }
+
     public void DoMovement(Vector2 move) {
         rigidbody2d.AddForce(move, ForceMode2D.Impulse); 
     }
