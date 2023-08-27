@@ -105,7 +105,7 @@ public class PlayerMovementTD : MonoBehaviour
         Invoke("EnableMovement", time);
     }
 
-    public void DoMovement(Vector2 move) {
+    public void DoMovement(Vector3 move) {
         rigidbody2d.AddForce(move, ForceMode2D.Impulse); 
     }
 
