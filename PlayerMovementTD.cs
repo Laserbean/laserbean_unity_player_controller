@@ -28,6 +28,8 @@ public class PlayerMovementTD : MonoBehaviour
 
     void Start() {
         rigidbody2d = GetComponent<Rigidbody2D>(); // attaches from the thing 
+
+        PlayerPosition.PlayerTransform = this.transform; 
     }
 
     #region tomove
