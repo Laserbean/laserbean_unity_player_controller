@@ -1,3 +1,5 @@
+#define USING_ANIMATOR
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -24,12 +26,20 @@ public class PlayerMovementTD : MonoBehaviour
     [SerializeField] bool move_player_direction = false; 
 
 
-    public Animator animator;
+#if USING_ANIMATOR
+    Animator animator;
+#endif
 
     void Start() {
         rigidbody2d = GetComponent<Rigidbody2D>(); // attaches from the thing 
 
         PlayerPosition.PlayerTransform = this.transform; 
+
+
+#if USING_ANIMATOR
+    animator = this.GetComponent<Animator>(); 
+#endif
+
     }
 
     #region tomove
@@ -69,9 +79,16 @@ public class PlayerMovementTD : MonoBehaviour
 
 
     void FixedUpdate() {
+        
+#if USING_ANIMATOR
         if (animator && GameManager.Instance.IsRunning) {
-            // animator.SetFloat("Player_speed", Mathf.Abs(Vector3.Magnitude(velocity))); //TODO
+            var velocity = velocityToMove.Rotate(-transform.rotation.eulerAngles.z);
+            animator.SetFloat("SpeedX", velocity.x);
+            animator.SetFloat("SpeedY", velocity.y);
+
+            animator.SetBool("IsMoving", Mathf.Abs(Vector3.Magnitude(velocityToMove)) > 0.1f);
         }
+#endif
 
         if (move_player_direction) velocityToMove.Rotate(this.transform.rotation.eulerAngles.z); 
         rigidbody2d.AddForce(velocityToMove); 
