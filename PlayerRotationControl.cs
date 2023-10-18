@@ -10,16 +10,14 @@ namespace Laserbean.PlayerControl {
 
 public class PlayerRotationControl : MonoBehaviour
 {
-
-
     [SerializeField] float MaxCameraDistanceFromPlayer= 2f; 
-
     [SerializeField] GameObject camerafocus; 
-
     [SerializeField] bool isFake3d; 
-
     [SerializeField]  bool useMouse = false; 
 
+    private void Awake() {
+        if (playerObject == null) playerObject = this.gameObject; 
+    }
 
     #if UNITY_EDITOR
     [ShowOnly]
@@ -89,40 +87,25 @@ public class PlayerRotationControl : MonoBehaviour
         if (GameManager.Instance.IsRunning) {
             if (isdx) {
                 rotateTarget = (-angle * rotateSensitivity/10f) + this.transform.rotation.eulerAngles.z; 
-                // this.transform.rotation = Quaternion.Euler(this.transform.rotation.eulerAngles + new Vector3(0,0,rotateTarget));
                 SetRotation(angle);
-                // if(cinemachine) {
-                //     CameraFromPlayer = new Vector2(this.transform.position.x, this.transform.position.y) + new Vector2(0, CameraOffset).Rotate(this.transform.rotation.eulerAngles.z);
-                //     cinemachine.transform.position = new Vector3(CameraFromPlayer.x, CameraFromPlayer.y, cameraPos.z);
-                //     cinemachine.transform.rotation = this.transform.rotation;
-                // } 
-
             } else {
-                // this.transform.rotation = Quaternion.Euler(0,0, angle);
                 SetRotation(angle);
-
-                // if(cinemachine) {
-                //     cinemachine.transform.rotation = Quaternion.Euler(0,0, 0);
-                // } 
             }
         }
     }
 
-    float current_rotation = 0f; 
+    public float Rotation { get; private set;}
 
-    public float rotation {
-        get {
-            return current_rotation; 
-        }
-    }
+    [SerializeField] GameObject playerObject; 
 
     [SerializeField] Animator animator; 
     void SetRotation(float angle) {
-        current_rotation = angle; 
+        Rotation = angle; 
+
         if (!isFake3d) {
-            this.transform.rotation = Quaternion.Euler(new Vector3(0,0,angle));
+            playerObject.transform.rotation = Quaternion.Euler(new Vector3(0,0,angle));
         } else {
-            this.transform.rotation = Quaternion.identity;
+            playerObject.transform.rotation = Quaternion.identity;
         }
         
         Vector2 lookdir = Vector2.up.Rotate(angle);
