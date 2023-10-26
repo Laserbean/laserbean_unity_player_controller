@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: PlayerMovementData
   m_EditorClassIdentifier: 
   <MoveSpeed>k__BackingField: 10
-  <DashSpeed>k__BackingField: 250
+  <DashSpeed>k__BackingField: 50
   <DashTime>k__BackingField: 0.1
-  <DashCooldown>k__BackingField: 2
+  <DashCooldown>k__BackingField: 0
   <JumpSpeed>k__BackingField: 10
   <JumpTime>k__BackingField: 1

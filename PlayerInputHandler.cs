@@ -24,11 +24,11 @@ public class PlayerInputHandler : MonoBehaviour
     }
 
     public void OnFire(InputValue value) {
-        playerInputData.MainAttack = true; 
+        playerInputData.MainAttack.SetTrue(); 
     }
 
-    public void OnUse(InputValue value) {
-        playerInputData.SecondAttack = true; 
+    public void OnMelee(InputValue value) {
+        playerInputData.MeleeAttack.SetTrue(); 
     }
 
     // public void OnFireCharged(InputValue value) {
@@ -36,11 +36,11 @@ public class PlayerInputHandler : MonoBehaviour
     // }
 
     public void OnJump(InputValue value) {
-        playerInputData.Jump = true; 
+        playerInputData.Jump.SetTrue(); 
     }
 
     public void OnDash(InputValue value) {
-        playerInputData.Dash = true; 
+        playerInputData.Dash.SetTrue(); 
     }
 
     
@@ -51,28 +51,43 @@ public class PlayerInputData
 {
     public Vector2 MoveDirection = Vector2.zero; 
 
-    public bool Jump = false; //unused for topdown.
-    public bool JumpPressed() {
-        var jj = Jump; 
-        Jump = false; 
-        return jj;    
-    }
+    public InputBool Jump = new(); //unused for topdown.
+    public InputBool Dash = new();
+    
 
-    public bool Dash = false;
-    public bool DashPressed() {
-        var jj = Dash; 
-        Dash = false; 
-        return jj;    
-    }
-
-    public bool MainAttack = false; 
-    public bool SecondAttack = false; 
-    public bool Melee = false; 
+    public InputBool MainAttack = new();
+    public InputBool SecondAttack = new();
+    public InputBool MeleeAttack = new();
 
     public Vector2 Look = Vector2.zero; 
 
-    public bool Interact = false; 
-    public bool Use = false; 
+    public InputBool Interact = new();
+    public InputBool Use = new();
 
 
 }
+
+public class InputBool {
+    public bool Value { get; set; }
+
+    public InputBool(bool initial = false) {
+        Value = initial;
+    }
+
+    public void SetTrue() {
+        Value = true; 
+    }
+
+    public void SetFalse() {
+        Value = false; 
+    }
+
+
+    public static implicit operator bool(InputBool curinputbool) {
+        var curbool = curinputbool.Value; 
+        curinputbool.Value = false; 
+
+        return curinputbool != null && curbool;
+    }
+}
+

@@ -13,6 +13,7 @@ public abstract class Entity : MonoBehaviour
     public Animator Animator { get; private set; }
 	public FiniteStateMachine StateMachine;
 
+    [HideInInspector]
     public Core Core; 
 
 	protected virtual void Awake() {
