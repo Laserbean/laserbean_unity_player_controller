@@ -24,11 +24,11 @@ public class PlayerInputHandler : MonoBehaviour
     }
 
     public void OnFire(InputValue value) {
-        playerInputData.MainAttack.SetTrue(); 
+        playerInputData.MainAttack = value.Get<float>() > 0.5f; 
     }
 
     public void OnMelee(InputValue value) {
-        playerInputData.MeleeAttack.SetTrue(); 
+        playerInputData.MeleeAttack = value.Get<float>() > 0.5f; 
     }
 
     // public void OnFireCharged(InputValue value) {
@@ -55,9 +55,9 @@ public class PlayerInputData
     public InputBool Dash = new();
     
 
-    public InputBool MainAttack = new();
-    public InputBool SecondAttack = new();
-    public InputBool MeleeAttack = new();
+    public bool MainAttack = new();
+    public bool SecondAttack = new();
+    public bool MeleeAttack = new();
 
     public Vector2 Look = Vector2.zero; 
 

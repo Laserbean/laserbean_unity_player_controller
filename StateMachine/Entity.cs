@@ -32,6 +32,7 @@ public abstract class Entity : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (StateMachine == null || StateMachine.CurrentState == null|| StateMachine.CurrentState.HasExit) return;
         StateMachine.CurrentState?.OnFixedUpdate();
     }
 }

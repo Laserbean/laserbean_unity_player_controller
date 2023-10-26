@@ -22,10 +22,14 @@ public class State
         this.stateMachine = stateMachine;
         this.animBoolName = animBoolName;
         core = entity.Core;
+        HasExit = false; 
     }
+
+    public bool HasExit {get; private set;}
 
     public virtual void OnEnter()
     {
+        HasExit = false; 
         startTime = Time.time;
         entity.Animator?.SetBool(animBoolName, true);
         DoChecks();
@@ -34,6 +38,7 @@ public class State
     public virtual void OnExit()
     {
         entity.Animator?.SetBool(animBoolName, false);
+        HasExit = true; 
     }
 
     public virtual void OnUpdate()
@@ -43,6 +48,7 @@ public class State
 
     public virtual void OnFixedUpdate()
     {
+        if (HasExit) return; 
         DoChecks();
     }
 

@@ -80,6 +80,8 @@ public class PlayerDeadState : PlayerState
 
     public override void OnFixedUpdate() {
         base.OnFixedUpdate();
+
+        // movement2D?.SetVelocityZero(); 
     } 
 
 }
@@ -89,10 +91,6 @@ public abstract class PlayerGround : PlayerState
 
     public PlayerGround(PlayerEntity entity, FiniteStateMachine stateMachine, PlayerMovementData playerdata, string animBoolName) : base(entity, stateMachine, playerdata, animBoolName)
     { }
-
-    public override void OnEnter() {
-        base.OnEnter();
-    }
 
     public override void OnFixedUpdate() {
         base.OnFixedUpdate();
@@ -129,6 +127,7 @@ public abstract class PlayerAbility : PlayerState
     public override void OnEnter() {
         base.OnEnter();
         starttime = Time.time; 
+        movement2D?.SetVelocityZero(); 
     }
 
     public override void OnExit() {
@@ -140,8 +139,8 @@ public abstract class PlayerAbility : PlayerState
     public override void OnFixedUpdate() {
         base.OnFixedUpdate();
 
-        if (Time.time - starttime > 0.3f) {
-            stateMachine.ChangeState(playerEntity.IdleGroundState); 
+        if (Time.time - starttime < 0.1f) {
+            movement2D?.SetVelocityZero(); 
         }
     }
 }
@@ -168,7 +167,7 @@ public class PlayerMainWeaponAbility : PlayerAbility
     public override void OnFixedUpdate() {
         base.OnFixedUpdate();
 
-        if (Time.time - starttime > 0.3f) {
+        if (!weapon_1.IsAttacking && !playerinput.playerInputData.MainAttack) {
             stateMachine.ChangeState(playerEntity.IdleGroundState); 
         }
     }
@@ -202,7 +201,7 @@ public class PlayerSecondWeaponAbility : PlayerAbility
     public override void OnFixedUpdate() {
         base.OnFixedUpdate();
 
-        if (Time.time - starttime > 0.3f) {
+        if (!weapon_2.IsAttacking && !playerinput.playerInputData.MeleeAttack) {
             stateMachine.ChangeState(playerEntity.IdleGroundState); 
         }
     }
@@ -252,7 +251,6 @@ public class PlayerIdleGround : PlayerGround
 
     }
 
-
     public override void OnFixedUpdate() {
         base.OnFixedUpdate();
 
@@ -273,7 +271,6 @@ public class PlayerWalkGround : PlayerGround
         Debug.Log("walk");
     }
 
-
     public override void OnFixedUpdate() {
         base.OnFixedUpdate();
 
@@ -285,8 +282,6 @@ public class PlayerWalkGround : PlayerGround
             Debug.Log("Befoer change to dash");
             stateMachine.ChangeState(playerEntity.DashGroundState); 
         }
-
-
         movement2D.SetVelocity(playerinput.playerInputData.MoveDirection * movementData.MoveSpeed);         
     }
 }
@@ -320,29 +315,6 @@ public class PlayerDashGround : PlayerGround
         return Time.time > start_time + movementData.DashCooldown + movementData.DashTime; 
     }
 }
-
-
-public class PlayerAttackGround : PlayerGround
-{
-
-    public PlayerAttackGround(PlayerEntity entity, FiniteStateMachine stateMachine, PlayerMovementData playerdata, string animBoolName) : base(entity, stateMachine, playerdata, animBoolName)
-    {
-    }
-
-    public override void OnEnter() {
-        base.OnEnter();
-        movement2D?.SetVelocityZero(); 
-        Debug.Log("Attack");
-    }
-
-
-    public override void OnFixedUpdate() {
-        base.OnFixedUpdate();
-
-        
-    }
-}
-
 
 
 
