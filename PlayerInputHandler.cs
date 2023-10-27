@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Laserbean.CoreSystem;
+using Laserbean.General;
 using UnityEngine;
 
 using UnityEngine.InputSystem; 
@@ -24,11 +25,27 @@ public class PlayerInputHandler : MonoBehaviour
     }
 
     public void OnFire(InputValue value) {
-        playerInputData.MainAttack = value.Get<float>() > 0.5f; 
+        // playerInputData.MainAttack = value.Get<float>() > 0.5f; 
+        if(value.Get<float>() > 0.5f) {
+            playerInputData.MainAttack.Pressed.SetTrue(); 
+            playerInputData.MainAttack.Released.SetFalse(); 
+        } else {
+            playerInputData.MainAttack.Pressed.SetFalse(); 
+            playerInputData.MainAttack.Released.SetTrue(); 
+        }
+        
     }
 
     public void OnMelee(InputValue value) {
-        playerInputData.MeleeAttack = value.Get<float>() > 0.5f; 
+        // playerInputData.MeleeAttack = value.Get<float>() > 0.5f; 
+        if(value.Get<float>() > 0.5f) {
+            playerInputData.MeleeAttack.Pressed.SetTrue(); 
+            playerInputData.MeleeAttack.Released.SetFalse(); 
+
+        } else {
+            playerInputData.MeleeAttack.Pressed.SetFalse(); 
+            playerInputData.MeleeAttack.Released.SetTrue(); 
+        }
     }
 
     // public void OnFireCharged(InputValue value) {
@@ -55,9 +72,9 @@ public class PlayerInputData
     public InputBool Dash = new();
     
 
-    public bool MainAttack = new();
-    public bool SecondAttack = new();
-    public bool MeleeAttack = new();
+    public InputEdgeBool MainAttack = new();
+    public InputEdgeBool SecondAttack = new();
+    public InputEdgeBool MeleeAttack = new();
 
     public Vector2 Look = Vector2.zero; 
 
@@ -83,11 +100,30 @@ public class InputBool {
     }
 
 
+    // public void Use() {
+    //     Value = false; 
+    // }
     public static implicit operator bool(InputBool curinputbool) {
         var curbool = curinputbool.Value; 
         curinputbool.Value = false; 
 
         return curinputbool != null && curbool;
+
+
+        // return curinputbool != null && curinputbool.Value;
+    }
+
+
+}
+
+
+public class InputEdgeBool {
+    public InputBool Pressed { get; set; }
+    public InputBool Released { get; set; }
+
+    public InputEdgeBool () {
+        Pressed = new(); 
+        Released = new(); 
     }
 }
 

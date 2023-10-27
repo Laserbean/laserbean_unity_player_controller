@@ -96,14 +96,18 @@ public abstract class PlayerGround : PlayerState
         base.OnFixedUpdate();
 
         if (playerinput.playerInputData.Jump) {
+            // playerinput.playerInputData.Jump.Use(); 
             stateMachine.ChangeState(playerEntity.InAirState); 
         }
+        Debug.Log("MainAttck = " + playerinput.playerInputData.MainAttack.Pressed.Value); 
 
-        if (playerinput.playerInputData.MainAttack && playerEntity.MainWeaponState.CanEnter()) {
+        if (playerinput.playerInputData.MainAttack.Pressed && playerEntity.MainWeaponState.CanEnter()) {
+            // playerinput.playerInputData.MainAttack.Pressed.Use(); 
             stateMachine.ChangeState(playerEntity.MainWeaponState); 
         }
 
-        if (playerinput.playerInputData.MeleeAttack && playerEntity.SecondWeaponState.CanEnter()) {
+        if (playerinput.playerInputData.MeleeAttack.Pressed && playerEntity.SecondWeaponState.CanEnter()) {
+            // playerinput.playerInputData.MeleeAttack.Pressed.Use(); 
             stateMachine.ChangeState(playerEntity.SecondWeaponState); 
         }
     }
@@ -154,8 +158,9 @@ public class PlayerMainWeaponAbility : PlayerAbility
 
     public override void OnEnter() {
         base.OnEnter();
-        weapon_1.Attack(); 
+        weapon_1.OnEnterAttack(); 
         starttime = Time.time; 
+        Debug.Log(animBoolName);
     }
 
     public override void OnExit() {
@@ -167,7 +172,12 @@ public class PlayerMainWeaponAbility : PlayerAbility
     public override void OnFixedUpdate() {
         base.OnFixedUpdate();
 
-        if (!weapon_1.IsAttacking && !playerinput.playerInputData.MainAttack) {
+        if (playerinput.playerInputData.MainAttack.Released) {
+            // playerinput.playerInputData.MainAttack.Released.Use();
+            weapon_1.OnAttackInputReleased(); 
+        }
+
+        if (!weapon_1.IsAttacking) {
             stateMachine.ChangeState(playerEntity.IdleGroundState); 
         }
     }
@@ -188,7 +198,7 @@ public class PlayerSecondWeaponAbility : PlayerAbility
 
     public override void OnEnter() {
         base.OnEnter();
-        weapon_2.Attack(); 
+        weapon_2.OnEnterAttack(); 
         starttime = Time.time; 
     }
 
@@ -201,7 +211,12 @@ public class PlayerSecondWeaponAbility : PlayerAbility
     public override void OnFixedUpdate() {
         base.OnFixedUpdate();
 
-        if (!weapon_2.IsAttacking && !playerinput.playerInputData.MeleeAttack) {
+        if (playerinput.playerInputData.MeleeAttack.Released) {
+            // playerinput.playerInputData.MeleeAttack.Released.Use(); 
+            weapon_2.OnAttackInputReleased(); 
+        }
+
+        if (!weapon_2.IsAttacking) {
             stateMachine.ChangeState(playerEntity.IdleGroundState); 
         }
     }
@@ -279,6 +294,7 @@ public class PlayerWalkGround : PlayerGround
             return; 
         }
         if (playerinput.playerInputData.Dash && playerEntity.DashGroundState.CanDash()) {
+            // playerinput.playerInputData.Dash.Use(); 
             Debug.Log("Befoer change to dash");
             stateMachine.ChangeState(playerEntity.DashGroundState); 
         }
