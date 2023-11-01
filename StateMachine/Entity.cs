@@ -6,7 +6,7 @@ using UnityEngine;
 
 using Laserbean.CoreSystem; 
 
-namespace Laserbean.FiniteStateMachine {
+namespace Laserbean.HFiniteStateMachine {
 
 public abstract class Entity : MonoBehaviour
 {

@@ -11,6 +11,7 @@ public class PlayerMovementData : ScriptableObject {
     [field: SerializeField] public int DashSpeed {get; private set;}
     [field: SerializeField] public float DashTime {get; private set;}
     [field: SerializeField] public float DashCooldown {get; private set;}
+    [field: SerializeField] public float DashStamina {get; private set;}
     
     [field: SerializeField] public int JumpSpeed {get; private set;}
     [field: SerializeField] public float JumpTime {get; private set;}

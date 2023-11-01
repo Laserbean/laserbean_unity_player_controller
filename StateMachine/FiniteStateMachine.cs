@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Laserbean.FiniteStateMachine {
+namespace Laserbean.HFiniteStateMachine {
 
 public class FiniteStateMachine
 {

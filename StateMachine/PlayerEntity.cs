@@ -2,338 +2,368 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-using Laserbean.FiniteStateMachine;
+using Laserbean.HFiniteStateMachine;
 using Laserbean.CoreSystem;
 using Cinemachine.Utility;
 using System.Data;
 
 using Laserbean.Weapon2D; 
+using Laserbean.ZombGaem.PlayerStates;
+using unityInventorySystem.Attribute;
 
-public class PlayerEntity : Entity
-{
-
-    public PlayerAirState InAirState {get; private set;}
-
-    public PlayerDeadState DeadState {get; private set;}
-    public PlayerIdleGround IdleGroundState {get; private set;}
-    public PlayerWalkGround WalkGroundState {get; private set;}
-    public PlayerDashGround DashGroundState {get; private set;}
-
-    public PlayerMainWeaponAbility MainWeaponState {get; private set;}
-
-    public PlayerSecondWeaponAbility SecondWeaponState {get; private set;}
+namespace Laserbean.ZombGaem.PlayerStates {
 
 
-    public PlayerMovementData movementData; 
-    protected override void Awake() {
-        base.Awake();
-
-        InAirState      = new PlayerAirState(this, StateMachine, movementData, "inAir");
-
-        DeadState       = new PlayerDeadState(this, StateMachine, movementData, "dead");
-
-        IdleGroundState = new PlayerIdleGround(this, StateMachine, movementData, "idle");
-        WalkGroundState = new PlayerWalkGround(this, StateMachine, movementData, "idle");
-        DashGroundState = new PlayerDashGround(this, StateMachine, movementData, "idle");
-
-        MainWeaponState = new PlayerMainWeaponAbility(this, StateMachine, movementData, "shoot1");
-        SecondWeaponState = new PlayerSecondWeaponAbility(this, StateMachine, movementData, "shoot2");
-
-        StateMachine.Initialize(IdleGroundState);
-    }
-}
-
-// Level 0
-public abstract class PlayerState : State
-{
-    protected PlayerEntity playerEntity; 
-    protected Movement2D movement2D; 
-    protected PlayerInputHandler playerinput; 
-    protected PlayerMovementData movementData; 
-
-    protected StatusController status; 
-
-    public PlayerState(PlayerEntity entity, FiniteStateMachine stateMachine, PlayerMovementData playerdata, string animBoolName) : base(entity, stateMachine, animBoolName)
+    public class PlayerEntity : Entity
     {
-        playerEntity = entity; 
-        movement2D = entity.Core.GetComponentInChildren<Movement2D>(); 
-        playerinput = entity.Core.GetComponentInParent<PlayerInputHandler>(); 
-        movementData = playerdata; 
-        status = entity.Core.GetCoreComponent<StatusController>();
-    }
-    
-    
-    public override void OnFixedUpdate() {
-        base.OnFixedUpdate();
 
-        if (status.Health.Value <= status.Health.MinValue) {
-            stateMachine.ChangeState(playerEntity.DeadState);
-        }
-    } 
-}
+        public PlayerAirState InAirState {get; private set;}
 
-// Level 1
-public class PlayerDeadState : PlayerState
-{
-    public PlayerDeadState(PlayerEntity entity, FiniteStateMachine stateMachine, PlayerMovementData playerdata, string animBoolName) : base(entity, stateMachine, playerdata, animBoolName)
-    {}
+        public PlayerDeadState DeadState {get; private set;}
+        public PlayerIdleGround IdleGroundState {get; private set;}
+        public PlayerWalkGround WalkGroundState {get; private set;}
+        public PlayerDashGround DashGroundState {get; private set;}
 
-    public override void OnFixedUpdate() {
-        base.OnFixedUpdate();
+        public PlayerMainWeaponAbility MainWeaponState {get; private set;}
 
-        // movement2D?.SetVelocityZero(); 
-    } 
+        public PlayerSecondWeaponAbility SecondWeaponState {get; private set;}
 
-}
 
-public abstract class PlayerGround : PlayerState
-{
+        public PlayerMovementData movementData; 
+        protected override void Awake() {
+            base.Awake();
 
-    public PlayerGround(PlayerEntity entity, FiniteStateMachine stateMachine, PlayerMovementData playerdata, string animBoolName) : base(entity, stateMachine, playerdata, animBoolName)
-    { }
+            InAirState        = new PlayerAirState(this, StateMachine, movementData, "inAir");
 
-    public override void OnFixedUpdate() {
-        base.OnFixedUpdate();
+            DeadState         = new PlayerDeadState(this, StateMachine, movementData, "dead");
 
-        if (playerinput.playerInputData.Jump) {
-            // playerinput.playerInputData.Jump.Use(); 
-            stateMachine.ChangeState(playerEntity.InAirState); 
-        }
-        Debug.Log("MainAttck = " + playerinput.playerInputData.MainAttack.Pressed.Value); 
+            IdleGroundState   = new PlayerIdleGround(this, StateMachine, movementData, "idle");
+            WalkGroundState   = new PlayerWalkGround(this, StateMachine, movementData, "idle");
+            DashGroundState   = new PlayerDashGround(this, StateMachine, movementData, "idle");
 
-        if (playerinput.playerInputData.MainAttack.Pressed && playerEntity.MainWeaponState.CanEnter()) {
-            // playerinput.playerInputData.MainAttack.Pressed.Use(); 
-            stateMachine.ChangeState(playerEntity.MainWeaponState); 
-        }
+            MainWeaponState   = new PlayerMainWeaponAbility(this, StateMachine, movementData, "shoot1");
+            SecondWeaponState = new PlayerSecondWeaponAbility(this, StateMachine, movementData, "shoot2");
 
-        if (playerinput.playerInputData.MeleeAttack.Pressed && playerEntity.SecondWeaponState.CanEnter()) {
-            // playerinput.playerInputData.MeleeAttack.Pressed.Use(); 
-            stateMachine.ChangeState(playerEntity.SecondWeaponState); 
+            StateMachine.Initialize(IdleGroundState);
         }
     }
-}
 
-public abstract class PlayerAbility : PlayerState
-{
-    protected Weapon weapon_1;
-    protected Weapon weapon_2;
 
-    public PlayerAbility(PlayerEntity entity, FiniteStateMachine stateMachine, PlayerMovementData playerdata, string animBoolName) : base(entity, stateMachine, playerdata, animBoolName)
+    // Level 0
+    public abstract class PlayerState : State
     {
-        weapon_1 = entity.GetComponentsInChildren<Weapon>()[0]; 
-        weapon_2 = entity.GetComponentsInChildren<Weapon>()[1]; 
+        protected PlayerEntity playerEntity; 
+        protected Movement2D movement2D; 
+        protected PlayerInputHandler playerinput; 
+        protected PlayerMovementData movementData; 
+
+        protected StatusCC status; 
+
+        public PlayerState(PlayerEntity entity, FiniteStateMachine stateMachine, PlayerMovementData playerdata, string animBoolName) : base(entity, stateMachine, animBoolName)
+        {
+            playerEntity = entity; 
+            movement2D = entity.Core.GetComponentInChildren<Movement2D>(); 
+            playerinput = entity.Core.GetComponentInParent<PlayerInputHandler>(); 
+            movementData = playerdata; 
+            status = entity.Core.GetCoreComponent<StatusCC>();
+        }
+        
+        
+        public override void OnFixedUpdate() {
+            base.OnFixedUpdate();
+
+            if (status.Health.Value <= status.Health.MinValue) {
+                stateMachine.ChangeState(playerEntity.DeadState);
+            }
+        } 
     }
 
-    float starttime = 0f; 
+    // Level 1
+    public class PlayerDeadState : PlayerState
+    {
+        public PlayerDeadState(PlayerEntity entity, FiniteStateMachine stateMachine, PlayerMovementData playerdata, string animBoolName) : base(entity, stateMachine, playerdata, animBoolName)
+        {}
 
-    public abstract bool CanEnter();
+        public override void OnFixedUpdate() {
+            base.OnFixedUpdate();
 
-    public override void OnEnter() {
-        base.OnEnter();
-        starttime = Time.time; 
-        movement2D?.SetVelocityZero(); 
+            // movement2D?.SetVelocityZero(); 
+        } 
+
     }
 
-    public override void OnExit() {
-        base.OnExit();
-        // weapon.FinishAttack(); 
+    public abstract class PlayerGround : PlayerState
+    {
+        AttributesController attributesController; 
+
+        public PlayerGround(PlayerEntity entity, FiniteStateMachine stateMachine, PlayerMovementData playerdata, string animBoolName) : base(entity, stateMachine, playerdata, animBoolName)
+        { 
+            attributesController = entity.GetComponent<AttributesController>();      
+
+            attributesController.OnAttributeChange += OnAttributeChange;
+        }
+
+        protected float ModifyWithAgility(float base_speed) {
+            return base_speed * (1 + AttributeCalculations.CalculateAgilityPercentage(Current_Agility_Attribute));  
+        }
+
+        int Current_Agility_Attribute = 0;
+
+        private void OnAttributeChange(unityInventorySystem.Attribute.Attribute attribute)
+        {
+            switch (attribute.type) {
+                case AttributeType.Agility:
+                    Current_Agility_Attribute =attribute.ModifiedValue;
+                break; 
+            }
+        }
+
+        public override void OnFixedUpdate() {
+            base.OnFixedUpdate();
+
+            if (playerinput.playerInputData.Jump) {
+                // playerinput.playerInputData.Jump.Use(); 
+                stateMachine.ChangeState(playerEntity.InAirState); 
+            }
+            // Debug.Log("MainAttck = " + playerinput.playerInputData.MainAttack.Pressed.Value); 
+
+            if (playerinput.playerInputData.MainAttack.Pressed && playerEntity.MainWeaponState.CanEnter()) {
+                // playerinput.playerInputData.MainAttack.Pressed.Use(); 
+                stateMachine.ChangeState(playerEntity.MainWeaponState); 
+            }
+
+            if (playerinput.playerInputData.MeleeAttack.Pressed && playerEntity.SecondWeaponState.CanEnter()) {
+                // playerinput.playerInputData.MeleeAttack.Pressed.Use(); 
+                stateMachine.ChangeState(playerEntity.SecondWeaponState); 
+            }
+        }
     }
 
+    public abstract class PlayerAbility : PlayerState
+    {
+        protected Weapon weapon_1;
+        protected Weapon weapon_2;
 
-    public override void OnFixedUpdate() {
-        base.OnFixedUpdate();
+        public PlayerAbility(PlayerEntity entity, FiniteStateMachine stateMachine, PlayerMovementData playerdata, string animBoolName) : base(entity, stateMachine, playerdata, animBoolName)
+        {
+            weapon_1 = entity.GetComponentsInChildren<Weapon>()[0]; 
+            weapon_2 = entity.GetComponentsInChildren<Weapon>()[1]; 
+        }
 
-        if (Time.time - starttime < 0.1f) {
+        float starttime = 0f; 
+
+        public abstract bool CanEnter();
+
+        public override void OnEnter() {
+            base.OnEnter();
+            starttime = Time.time; 
             movement2D?.SetVelocityZero(); 
         }
-    }
-}
 
-public class PlayerMainWeaponAbility : PlayerAbility
-{
-    public PlayerMainWeaponAbility(PlayerEntity entity, FiniteStateMachine stateMachine, PlayerMovementData playerdata, string animBoolName) : base(entity, stateMachine, playerdata, animBoolName)
-    {}
-
-    float starttime = 0f; 
-
-    public override void OnEnter() {
-        base.OnEnter();
-        weapon_1.OnEnterAttack(); 
-        starttime = Time.time; 
-        Debug.Log(animBoolName);
-    }
-
-    public override void OnExit() {
-        base.OnExit();
-        // weapon.FinishAttack(); 
-    }
-
-
-    public override void OnFixedUpdate() {
-        base.OnFixedUpdate();
-
-        if (playerinput.playerInputData.MainAttack.Released) {
-            // playerinput.playerInputData.MainAttack.Released.Use();
-            weapon_1.OnAttackInputReleased(); 
+        public override void OnExit() {
+            base.OnExit();
+            // weapon.FinishAttack(); 
         }
 
-        if (!weapon_1.IsAttacking) {
-            stateMachine.ChangeState(playerEntity.IdleGroundState); 
+
+        public override void OnFixedUpdate() {
+            base.OnFixedUpdate();
+
+            if (Time.time - starttime < 0.1f) {
+                movement2D?.SetVelocityZero(); 
+            }
         }
     }
 
-    public override bool CanEnter()
+    public class PlayerMainWeaponAbility : PlayerAbility
     {
-        return weapon_1.CanEnterAttack; 
-    }
-}
+        public PlayerMainWeaponAbility(PlayerEntity entity, FiniteStateMachine stateMachine, PlayerMovementData playerdata, string animBoolName) : base(entity, stateMachine, playerdata, animBoolName)
+        {}
 
-public class PlayerSecondWeaponAbility : PlayerAbility
-{
+        float starttime = 0f; 
 
-    public PlayerSecondWeaponAbility(PlayerEntity entity, FiniteStateMachine stateMachine, PlayerMovementData playerdata, string animBoolName) : base(entity, stateMachine, playerdata, animBoolName)
-    {}
-
-    float starttime = 0f; 
-
-    public override void OnEnter() {
-        base.OnEnter();
-        weapon_2.OnEnterAttack(); 
-        starttime = Time.time; 
-    }
-
-    public override void OnExit() {
-        base.OnExit();
-        // weapon.FinishAttack(); 
-    }
-
-
-    public override void OnFixedUpdate() {
-        base.OnFixedUpdate();
-
-        if (playerinput.playerInputData.MeleeAttack.Released) {
-            // playerinput.playerInputData.MeleeAttack.Released.Use(); 
-            weapon_2.OnAttackInputReleased(); 
+        public override void OnEnter() {
+            base.OnEnter();
+            weapon_1.EnterAttack(); 
+            starttime = Time.time; 
+            Debug.Log(animBoolName);
         }
 
-        if (!weapon_2.IsAttacking) {
-            stateMachine.ChangeState(playerEntity.IdleGroundState); 
+        public override void OnExit() {
+            base.OnExit();
+            // weapon.FinishAttack(); 
+        }
+
+
+        public override void OnFixedUpdate() {
+            base.OnFixedUpdate();
+
+            if (playerinput.playerInputData.MainAttack.Released) {
+                // playerinput.playerInputData.MainAttack.Released.Use();
+                weapon_1.OnAttackInputReleased(); 
+            }
+
+            if (!weapon_1.IsAttacking) {
+                stateMachine.ChangeState(playerEntity.IdleGroundState); 
+            }
+        }
+
+        public override bool CanEnter()
+        {
+            return weapon_1.CanEnterAttack; 
         }
     }
 
-    
-    public override bool CanEnter()
+    public class PlayerSecondWeaponAbility : PlayerAbility
     {
-        return weapon_2.CanEnterAttack; 
-    }
-}
 
-public class PlayerAirState : PlayerState
-{
+        public PlayerSecondWeaponAbility(PlayerEntity entity, FiniteStateMachine stateMachine, PlayerMovementData playerdata, string animBoolName) : base(entity, stateMachine, playerdata, animBoolName)
+        {}
 
-    public PlayerAirState(PlayerEntity entity, FiniteStateMachine stateMachine, PlayerMovementData playerdata, string animBoolName) : base(entity, stateMachine, playerdata, animBoolName)
-    {}
+        float starttime = 0f; 
 
-    float start_time = 0f; 
-    public override void OnEnter() {
-        base.OnEnter();
-        start_time = Time.time; 
-        Debug.Log("Air state");
-    }
-
-
-    public override void OnFixedUpdate() {
-        base.OnFixedUpdate();
-
-        if (Time.time - startTime > movementData.JumpTime) {
-            stateMachine.ChangeState(playerEntity.IdleGroundState); 
+        public override void OnEnter() {
+            base.OnEnter();
+            weapon_2.EnterAttack(); 
+            starttime = Time.time; 
         }
-    }
-}
 
-
-// Level 2
-
-public class PlayerIdleGround : PlayerGround
-{
-    public PlayerIdleGround(PlayerEntity entity, FiniteStateMachine stateMachine, PlayerMovementData playerdata, string animBoolName) : base(entity, stateMachine, playerdata, animBoolName)
-    {}
-
-    public override void OnEnter() {
-        base.OnEnter();
-        movement2D?.SetVelocityZero(); 
-        Debug.Log("idle");
-
-    }
-
-    public override void OnFixedUpdate() {
-        base.OnFixedUpdate();
-
-        if (playerinput.playerInputData.MoveDirection.sqrMagnitude > 0) {
-            movement2D.SetVelocity(playerinput.playerInputData.MoveDirection * movementData.MoveSpeed); 
-            stateMachine.ChangeState(playerEntity.WalkGroundState);
+        public override void OnExit() {
+            base.OnExit();
+            // weapon.FinishAttack(); 
         }
-    }
-}
 
-public class PlayerWalkGround : PlayerGround
-{
-    public PlayerWalkGround(PlayerEntity entity, FiniteStateMachine stateMachine, PlayerMovementData playerdata, string animBoolName) : base(entity, stateMachine, playerdata, animBoolName)
-    {}
 
-    public override void OnEnter() {
-        base.OnEnter();
-        Debug.Log("walk");
-    }
+        public override void OnFixedUpdate() {
+            base.OnFixedUpdate();
 
-    public override void OnFixedUpdate() {
-        base.OnFixedUpdate();
+            if (playerinput.playerInputData.MeleeAttack.Released) {
+                // playerinput.playerInputData.MeleeAttack.Released.Use(); 
+                weapon_2.OnAttackInputReleased(); 
+            }
 
-        if (playerinput.playerInputData.MoveDirection.sqrMagnitude == 0) {
-            stateMachine.ChangeState(playerEntity.IdleGroundState);
-            return; 
+            if (!weapon_2.IsAttacking) {
+                stateMachine.ChangeState(playerEntity.IdleGroundState); 
+            }
         }
-        if (playerinput.playerInputData.Dash && playerEntity.DashGroundState.CanDash()) {
-            // playerinput.playerInputData.Dash.Use(); 
-            Debug.Log("Befoer change to dash");
-            stateMachine.ChangeState(playerEntity.DashGroundState); 
-        }
-        movement2D.SetVelocity(playerinput.playerInputData.MoveDirection * movementData.MoveSpeed);         
-    }
-}
 
-public class PlayerDashGround : PlayerGround
-{
-    public PlayerDashGround(PlayerEntity entity, FiniteStateMachine stateMachine, PlayerMovementData playerdata, string animBoolName) : base(entity, stateMachine, playerdata, animBoolName)
-    {}
-
-    float start_time = 0f; 
-    public override void OnEnter() {
-        base.OnEnter();
-        Debug.Log("Dash");
-
-        start_time = Time.time; 
-         
-    }
-
-
-    public override void OnFixedUpdate() {
-        base.OnFixedUpdate();
-
-        movement2D.SetVelocity(movement2D.LastDirection * movementData.DashSpeed);
-        if (Time.time > start_time + movementData.DashTime) {
-            stateMachine.ChangeState(playerEntity.IdleGroundState);
-            return; 
+        
+        public override bool CanEnter()
+        {
+            return weapon_2.CanEnterAttack; 
         }
     }
 
-    public bool CanDash() {
-        return Time.time > start_time + movementData.DashCooldown + movementData.DashTime; 
+    public class PlayerAirState : PlayerState
+    {
+
+        public PlayerAirState(PlayerEntity entity, FiniteStateMachine stateMachine, PlayerMovementData playerdata, string animBoolName) : base(entity, stateMachine, playerdata, animBoolName)
+        {}
+
+        float start_time = 0f; 
+        public override void OnEnter() {
+            base.OnEnter();
+            start_time = Time.time; 
+            Debug.Log("Air state");
+        }
+
+
+        public override void OnFixedUpdate() {
+            base.OnFixedUpdate();
+
+            if (Time.time - startTime > movementData.JumpTime) {
+                stateMachine.ChangeState(playerEntity.IdleGroundState); 
+            }
+        }
     }
+
+
+    // Level 2
+
+    public class PlayerIdleGround : PlayerGround
+    {
+        public PlayerIdleGround(PlayerEntity entity, FiniteStateMachine stateMachine, PlayerMovementData playerdata, string animBoolName) : base(entity, stateMachine, playerdata, animBoolName)
+        {}
+
+        public override void OnEnter() {
+            base.OnEnter();
+            movement2D?.SetVelocityZero(); 
+            Debug.Log("idle");
+
+        }
+
+        public override void OnFixedUpdate() {
+            base.OnFixedUpdate();
+
+            if (playerinput.playerInputData.MoveDirection.sqrMagnitude > 0) {
+                movement2D.SetVelocity(playerinput.playerInputData.MoveDirection * ModifyWithAgility(movementData.MoveSpeed)); 
+                stateMachine.ChangeState(playerEntity.WalkGroundState);
+            }
+        }
+    }
+
+    public class PlayerWalkGround : PlayerGround
+    {
+        public PlayerWalkGround(PlayerEntity entity, FiniteStateMachine stateMachine, PlayerMovementData playerdata, string animBoolName) : base(entity, stateMachine, playerdata, animBoolName)
+        {}
+
+        public override void OnEnter() {
+            base.OnEnter();
+            Debug.Log("walk");
+        }
+
+        public override void OnFixedUpdate() {
+            base.OnFixedUpdate();
+
+            if (playerinput.playerInputData.MoveDirection.sqrMagnitude == 0) {
+                stateMachine.ChangeState(playerEntity.IdleGroundState);
+                return; 
+            }
+            if (playerinput.playerInputData.Dash && playerEntity.DashGroundState.CanDash()) {
+                // playerinput.playerInputData.Dash.Use(); 
+                Debug.Log("Befoer change to dash");
+                stateMachine.ChangeState(playerEntity.DashGroundState); 
+            }
+            movement2D.SetVelocity(playerinput.playerInputData.MoveDirection * ModifyWithAgility(movementData.MoveSpeed));         
+        }
+    }
+
+    public class PlayerDashGround : PlayerGround
+    {
+        StatusCC statuscontroller; 
+        public PlayerDashGround(PlayerEntity entity, FiniteStateMachine stateMachine, PlayerMovementData playerdata, string animBoolName) : base(entity, stateMachine, playerdata, animBoolName)
+        {
+            statuscontroller = entity.Core.GetCoreComponent<StatusCC>(); 
+        }
+
+        float start_time = 0f; 
+        public override void OnEnter() {
+            base.OnEnter();
+            Debug.Log("Dash");
+
+            start_time = Time.time; 
+            statuscontroller.Stamina.Decrease(movementData.DashStamina);                 
+        }
+
+
+        public override void OnFixedUpdate() {
+            base.OnFixedUpdate();
+
+            movement2D.SetVelocity(movement2D.LastDirection * movementData.DashSpeed);
+            if (Time.time > start_time + movementData.DashTime) {
+                stateMachine.ChangeState(playerEntity.IdleGroundState);
+                return; 
+            }
+        }
+
+        public bool CanDash() {
+            return Time.time > start_time + movementData.DashCooldown + movementData.DashTime && statuscontroller.Stamina.Value >= movementData.DashStamina; 
+        }
+    }
+
+
+
 }
-
-
-
 
 
 
