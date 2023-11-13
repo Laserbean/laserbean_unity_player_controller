@@ -10,7 +10,7 @@ public class PlayerStatusDisplay : MonoBehaviour
     void Start()
     {
         statusController = GetComponent<StatusCC>(); 
-        EventManager.TriggerEvent(new PlayerStatusChangeEvent(statusController)); 
+        EventManager.TriggerEvent(new PlayerStatusInitializeEvent(statusController)); 
         
     }
 
@@ -21,14 +21,14 @@ public class PlayerStatusDisplay : MonoBehaviour
     }
 }
 [System.Serializable]
-public class PlayerStatusChangeEvent {
+public class PlayerStatusInitializeEvent {
     // public StatusValue Health; 
     // public StatusValue Stamina; 
     // public StatusValue Poise; 
 
     public StatusCC statuscc;
 
-    public PlayerStatusChangeEvent(StatusCC _statuscc) {
+    public PlayerStatusInitializeEvent(StatusCC _statuscc) {
         // Health = _statuscc.Health; 
         // Stamina = _statuscc.Stamina; 
         // Poise = _statuscc.Poise; 
