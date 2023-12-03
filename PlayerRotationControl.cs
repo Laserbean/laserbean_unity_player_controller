@@ -44,9 +44,13 @@ public class PlayerRotationControl : MonoBehaviour
         }
     }
 
-    public void OnPoint(InputValue value) {
+
+    public void OnPoint(InputValue value) => OnPoint(value.Get<Vector2>()); 
+    public void OnPoint(InputAction.CallbackContext value) => OnPoint(value.ReadValue<Vector2>()); 
+
+    void OnPoint(Vector2 value) {
         if (useMouse && !rotationLocked) {
-            Vector3 mousepos = value.Get<Vector2>().ToVector3(); 
+            Vector3 mousepos = value.ToVector3(); 
             // // // Debug.Log(mousepos);
             Vector3 playerpos = this.transform.position;
             playerpos = Camera.main.WorldToScreenPoint(this.transform.position);
@@ -61,11 +65,14 @@ public class PlayerRotationControl : MonoBehaviour
         }
     }
 
+
+    public void OnLook(InputValue value) => OnLook(value.Get<Vector2>()); 
+    public void OnLook(InputAction.CallbackContext value) => OnLook(value.ReadValue<Vector2>()); 
     
-    public void OnLook(InputValue value) {
+    void OnLook(Vector2 value) {
         float look_angle =0f; 
         if (!useMouse && !rotationLocked) {
-            Vector3 dir = value.Get<Vector2>().ToVector3(); 
+            Vector3 dir = value.ToVector3(); 
             if (dir.magnitude > 0.01f) {
                 look_angle = Vector3.SignedAngle(dir, Vector3.up, Vector3.back);
 
@@ -83,7 +90,7 @@ public class PlayerRotationControl : MonoBehaviour
     public float rotateSensitivity =1f;
 
 
-    public void Aim(float angle, bool isdx) {
+    void Aim(float angle, bool isdx) {
         if (GameManager.Instance.IsRunning) {
             if (isdx) {
                 rotateTarget = (-angle * rotateSensitivity/10f) + this.transform.rotation.eulerAngles.z; 
